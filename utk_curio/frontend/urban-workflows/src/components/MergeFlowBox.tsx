@@ -193,11 +193,6 @@ export default function MergeFlowBox({ data, isConnectable }: MergeFlowBoxProps)
           custom={templateData.custom}
         />
       </BoxContainer>
-
-      {/* Display error if any */}
-      {error && (
-        <div style={{ color: "red", marginTop: 8, fontWeight: "bold" }}>{error}</div>
-      )}
     </>
   );
 }
