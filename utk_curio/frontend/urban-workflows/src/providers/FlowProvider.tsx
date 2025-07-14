@@ -27,6 +27,7 @@ import { BoxType, EdgeType, VisInteractionType } from "../constants";
 import { useProvenanceContext } from "./ProvenanceProvider";
 import { TrillGenerator } from "../TrillGenerator";
 
+
 export interface IOutput {
     nodeId: string;
     output: string;
@@ -65,8 +66,8 @@ interface FlowContextProps {
     applyRemoveChanges: (changes: NodeRemoveChange[]) => void;
     setPinForDashboard: (nodeId: string, value: boolean) => void;
     setDashBoardMode: (value: boolean) => void;
-    updatePositionWorkflow: (nodeId:string, position: any) => void;
-    updatePositionDashboard: (nodeId:string, position: any) => void;
+    updatePositionWorkflow: (nodeId: string, position: any) => void;
+    updatePositionDashboard: (nodeId: string, position: any) => void;
     applyNewOutput: (output: IOutput) => void;
     setWorkflowName: (name: string) => void;
     setAllMinimized: (value: number) => void;
@@ -81,25 +82,25 @@ export const FlowContext = createContext<FlowContextProps>({
     allMinimized: 0,
     expandStatus: 'expanded',
     setOutputs: () => { },
-    setInteractions: () => {},
-    applyNewPropagation: () => {},
+    setInteractions: () => { },
+    applyNewPropagation: () => { },
     addNode: () => { },
     onNodesChange: () => { },
     onEdgesChange: () => { },
     onConnect: () => { },
     isValidConnection: () => true,
-    onEdgesDelete: () => {},
-    applyRemoveChanges: () => {},
-    onNodesDelete: () => {},
-    setPinForDashboard: () => {},
-    setDashBoardMode: () => {},
-    updatePositionWorkflow: () => {},
-    updatePositionDashboard: () => {},
-    applyNewOutput: () => {},
-    setWorkflowName: () => {},
-    setAllMinimized: () => {},
-    setExpandStatus: () => {},
-    loadParsedTrill: async () => {}
+    onEdgesDelete: () => { },
+    applyRemoveChanges: () => { },
+    onNodesDelete: () => { },
+    setPinForDashboard: () => { },
+    setDashBoardMode: () => { },
+    updatePositionWorkflow: () => { },
+    updatePositionDashboard: () => { },
+    applyNewOutput: () => { },
+    setWorkflowName: () => { },
+    setAllMinimized: () => { },
+    setExpandStatus: () => { },
+    loadParsedTrill: async () => { }
 });
 
 const FlowProvider = ({ children }: { children: ReactNode }) => {
@@ -130,12 +131,13 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
     const { newBox, addWorkflow, deleteBox, newConnection, deleteConnection } =
         useProvenanceContext();
 
-    const [workflowName, _setWorkflowName] = useState<string>("DefaultWorkflow"); 
+    const [workflowName, _setWorkflowName] = useState<string>("DefaultWorkflow");
     const workflowNameRef = React.useRef(workflowName);
     const setWorkflowName = (data: any) => {
         workflowNameRef.current = data;
         _setWorkflowName(data);
     };
+
 
     useEffect(() => {
         addWorkflow(workflowNameRef.current);
@@ -161,7 +163,7 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
 
         // setWorkflowGoal(task);
 
-        if(!merge){
+        if (!merge) {
             setWorkflowName(workflowName);
             await addWorkflow(workflowName); // reseting provenance with new workflow
             console.log("loadParsedTrill reseting nodes")
@@ -170,50 +172,50 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
 
         let current_nodes_ids = [];
 
-        if(merge){
-            for(const node of nodes){
+        if (merge) {
+            for (const node of nodes) {
                 current_nodes_ids.push(node.id);
             }
-    
-            for(const node of loaded_nodes){ // adding new nodes one by one
-                if(!current_nodes_ids.includes(node.id)){ // if the node already exist do not include it again
+
+            for (const node of loaded_nodes) { // adding new nodes one by one
+                if (!current_nodes_ids.includes(node.id)) { // if the node already exist do not include it again
                     addNode(node, workflowName, provenance);
                 }
             }
-        }else{
-            for(const node of loaded_nodes){ // adding new nodes one by one
+        } else {
+            for (const node of loaded_nodes) { // adding new nodes one by one
                 addNode(node, workflowName, provenance);
             }
         }
 
-        if(!merge){
+        if (!merge) {
             // onEdgesDelete(edges);
             setEdges(prevEdges => []) // Reseting edges
         }
 
         let current_edges_ids = [];
 
-        for(const edge of edges){
+        for (const edge of edges) {
             current_edges_ids.push(edge.id);
         }
 
         console.log("loadParsedTrill second");
         setNodes((prevNodes: any) => { // Guarantee that previous nodes were added
-            
-            if(merge){
-                for(const edge of loaded_edges){
-                    if(!current_edges_ids.includes(edge.id)){ // if the edge already exist do not include it again
+
+            if (merge) {
+                for (const edge of loaded_edges) {
+                    if (!current_edges_ids.includes(edge.id)) { // if the edge already exist do not include it again
                         onConnect(edge, prevNodes, undefined, workflowName, provenance);
                     }
                 }
-            }else{
-                for(const edge of loaded_edges){
+            } else {
+                for (const edge of loaded_edges) {
                     onConnect(edge, prevNodes, undefined, workflowName, provenance);
                 }
             }
 
-    
-            if(!merge){
+
+            if (!merge) {
                 setOutputs([]);
                 setInteractions([]);
                 setDashboardPins({});
@@ -272,7 +274,7 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
         nodesDiv.forEach((element) => {
             if (value) {
                 // @ts-ignore
-                if (!dashboardPins[element.getAttribute("data-id")]) {
+                if (!dashboardPins[element.getAttribute("data-id")!]) {
                     // @ts-ignore
                     element.style.display = "none";
                 } else {
@@ -282,21 +284,21 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                     // @ts-ignore
                     if (
                         positionsInDashboardRef.current[
-                            element.getAttribute("data-id")
+                        element.getAttribute("data-id")!
                         ] != undefined
                     ) {
                         setNodes((oldNodes) => {
                             // @ts-ignore
                             console.log(
                                 positionsInDashboardRef.current[
-                                    element.getAttribute("data-id")
+                                element.getAttribute("data-id")!
                                 ]
                             );
                             // @ts-ignore
                             return applyNodeChanges(
                                 [
                                     positionsInDashboardRef.current[
-                                        element.getAttribute("data-id")
+                                    element.getAttribute("data-id")!
                                     ],
                                 ],
                                 oldNodes
@@ -311,13 +313,13 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                 // @ts-ignore
                 if (
                     positionsInWorkflowRef.current[
-                        element.getAttribute("data-id")
+                    element.getAttribute("data-id")!
                     ] != undefined
                 ) {
                     // @ts-ignore
                     console.log(
                         positionsInWorkflowRef.current[
-                            element.getAttribute("data-id")
+                        element.getAttribute("data-id")!
                         ]
                     );
                     // @ts-ignore
@@ -325,7 +327,7 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                         applyNodeChanges(
                             [
                                 positionsInWorkflowRef.current[
-                                    element.getAttribute("data-id")
+                                element.getAttribute("data-id")!
                                 ],
                             ],
                             oldNodes
@@ -401,14 +403,14 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                 updatePositionWorkflow(node.id, {
                     id: node.id,
                     dragging: true,
-                    position: {...node.position},
-                    positionAbsolute: {...node.position},
+                    position: { ...node.position },
+                    positionAbsolute: { ...node.position },
                     type: "position"
                 });
                 return prev.concat(node)
             });
 
-            if(provenance) // If there should be provenance tracking
+            if (provenance) // If there should be provenance tracking
                 newBox((customWorkflowName ? customWorkflowName : workflowNameRef.current), (node.type as string) + "-" + node.id);
         },
         [setNodes]
@@ -444,19 +446,20 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                 if (node.id == setInput) {
                     // Merge Flow box is the only box that allows multiple 'in' connections
                     if (inBox == BoxType.MERGE_FLOW) {
-                        let inputList = node.data.input;
-                        let sourceList = node.data.source;
+                        // Initialize fixed-size arrays for position-semantic behavior
+                        let inputList = Array.isArray(node.data.input) ? [...node.data.input] : [undefined, undefined];
+                        let sourceList = Array.isArray(node.data.source) ? [...node.data.source] : [undefined, undefined];
 
-                        if (inputList == undefined || inputList == "") {
-                            inputList = [output];
-                        } else {
-                            inputList = [...inputList, output];
-                        }
+                        // Ensure arrays are exactly size 2
+                        while (inputList.length < 2) inputList.push(undefined);
+                        while (sourceList.length < 2) sourceList.push(undefined);
 
-                        if (sourceList == undefined || sourceList == "") {
-                            sourceList = [getOutput];
-                        } else {
-                            sourceList = [...sourceList, getOutput];
+                        // Map handle to array index: "in_1" -> 0 (primary), "in_2" -> 1 (secondary)
+                        const handleIndex = targetHandle === "in_1" ? 0 : targetHandle === "in_2" ? 1 : -1;
+
+                        if (handleIndex >= 0) {
+                            inputList[handleIndex] = output;
+                            sourceList[handleIndex] = getOutput;
                         }
 
                         node.data = {
@@ -505,27 +508,18 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                         nds.map((node: any) => {
                             if (node.id == resetInput) {
                                 if (targetNode.type === BoxType.MERGE_FLOW) {
-                                    let inputList: string[] = [];
-                                    let sourceList: string[] = [];
+                                    let inputList = Array.isArray(node.data.input) ? [...node.data.input] : [undefined, undefined];
+                                    let sourceList = Array.isArray(node.data.source) ? [...node.data.source] : [undefined, undefined];
 
-                                    if (Array.isArray(node.data.source)) {
-                                        for (
-                                            let i = 0;
-                                            i < node.data.source.length;
-                                            i++
-                                        ) {
-                                            if (
-                                                connection.source !=
-                                                node.data.source[i]
-                                            ) {
-                                                inputList.push(
-                                                    node.data.input[i]
-                                                );
-                                                sourceList.push(
-                                                    node.data.source[i]
-                                                );
-                                            }
-                                        }
+                                    while (inputList.length < 2) inputList.push(undefined);
+                                    while (sourceList.length < 2) sourceList.push(undefined);
+
+                                    const handleIndex = connection.targetHandle === "in_1" ? 0 : connection.targetHandle === "in_2" ? 1 : -1;
+
+                                    if (handleIndex >= 0) {
+                                        // Clear the specific position
+                                        inputList[handleIndex] = undefined;
+                                        sourceList[handleIndex] = undefined;
                                     }
 
                                     node.data = {
@@ -557,10 +551,7 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                 opts.filter((opt: any) => {
                     for (const change of changes) {
                         // @ts-ignore
-                        if (
-                            opt.nodeId == change.id &&
-                            change.type == "remove"
-                        ) {
+                        if (change.type === "remove" && opt.nodeId === change.id) {
                             // node was removed
                             return false;
                         }
@@ -602,39 +593,35 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                 }
             };
 
+            // accept string, null, or undefined:
+            const isInHandle = (h: string | null | undefined): boolean => !!h && h.startsWith("in");
+            const isInOutHandle = (h: string | null | undefined): boolean => h === "in/out";
+
+
             let validHandleCombination = true;
 
             if (
-                (connection.sourceHandle == "in/out" &&
-                    connection.targetHandle != "in/out") ||
-                (connection.targetHandle == "in/out" &&
-                    connection.sourceHandle != "in/out")
+                (isInOutHandle(connection.sourceHandle) && !isInOutHandle(connection.targetHandle)) ||
+                (isInOutHandle(connection.targetHandle) && !isInOutHandle(connection.sourceHandle))
             ) {
                 validHandleCombination = false;
-                alert(
-                    "An in/out connection can only be connected to another in/out connection"
-                );
-            } else if (
-                ((connection.sourceHandle == "in" || connection.sourceHandle == "in_2") &&
-                    connection.targetHandle != "out") ||
-                ((connection.targetHandle == "in" || connection.targetHandle == "in_2") &&
-                    connection.sourceHandle != "out")
-            ) {
-                validHandleCombination = false;
-                alert(
-                    "An in connection can only be connected to an out connection"
-                );
-            } else if (
-                (connection.sourceHandle == "out" &&
-                    (connection.targetHandle != "in" && connection.targetHandle != "in_2")) ||
-                (connection.targetHandle == "out" &&
-                    (connection.sourceHandle != "in" && connection.sourceHandle != "in_2"))
-            ) {
-                validHandleCombination = false;
-                alert(
-                    "An out connection can only be connected to an in connection"
-                );
+                alert("An in/out connection can only be connected to another in/out connection");
             }
+            else if (
+                (isInHandle(connection.sourceHandle) && connection.targetHandle !== "out") ||
+                (isInHandle(connection.targetHandle) && connection.sourceHandle !== "out")
+            ) {
+                validHandleCombination = false;
+                alert("An in connection can only be connected to an out connection");
+            }
+            else if (
+                (connection.sourceHandle === "out" && !isInHandle(connection.targetHandle)) ||
+                (connection.targetHandle === "out" && !isInHandle(connection.sourceHandle))
+            ) {
+                validHandleCombination = false;
+                alert("An out connection can only be connected to an in connection");
+            }
+
 
             if (validHandleCombination) {
                 // Check compatibility between inputs and outputs
@@ -656,10 +643,21 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                     inBox
                 );
 
-                if (!allowConnection)
-                    alert(
-                        "Input and output types of these boxes are not compatible"
+                if (!allowConnection) {
+                    alert("Input and output types of these boxes are not compatible");
+                }
+
+                if (inBox === BoxType.MERGE_FLOW && allowConnection) {
+                    const existingConnections = edges.filter((edge: Edge) =>
+                        edge.target === connection.target &&
+                        (edge.targetHandle === "in_1" || edge.targetHandle === "in_2")
                     );
+
+                    if (existingConnections.length >= 2) {
+                        alert("Connection Limit Reached!\n\nMerge nodes can only accept 2 input connections:\n• TOP-LEFT input = Primary data\n• BOTTOM-LEFT input = Secondary data\n\nPlease remove an existing connection first.");
+                        allowConnection = false;
+                    }
+                }
 
                 // Checking cycles
                 if (target.id === connection.source) {
@@ -687,7 +685,7 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                             markerEnd: { type: MarkerType.ArrowClosed },
                         };
 
-                        if(customConnection.data == undefined)
+                        if (customConnection.data == undefined)
                             customConnection.data = {};
 
                         if (
@@ -700,13 +698,13 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                             customConnection.type = EdgeType.BIDIRECTIONAL_EDGE;
                         } else {
                             customConnection.type = EdgeType.UNIDIRECTIONAL_EDGE;
-                            
-                            if(true)  //Changed provenance to always persist connections; monitor for potential side effects.
+
+                            if (true)  //Changed provenance to always persist connections; monitor for potential side effects.
                                 newConnection(
-                                    (custom_workflow ? custom_workflow : workflowNameRef.current), 
-                                    customConnection.source, 
-                                    outBox as BoxType, 
-                                    customConnection.target, 
+                                    (custom_workflow ? custom_workflow : workflowNameRef.current),
+                                    customConnection.source,
+                                    outBox as BoxType,
+                                    customConnection.target,
                                     inBox as BoxType
                                 );
                         }
@@ -757,41 +755,24 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
             nds.map((node: any) => {
                 if (nodesAffected.includes(node.id)) {
                     if (node.type == BoxType.MERGE_FLOW) {
-                        if (Array.isArray(node.data.input)) {
-                            let foundSource = false;
-                            let inputList: string[] = [];
-                            let sourceList: string[] = [];
+                        let inputList = Array.isArray(node.data.input) ? [...node.data.input] : [undefined, undefined];
+                        let sourceList = Array.isArray(node.data.source) ? [...node.data.source] : [undefined, undefined];
 
-                            for (let i = 0; i < node.data.input.length; i++) {
-                                if (node.data.source[i] == newOutput.nodeId) {
-                                    // updating new value
-                                    inputList.push(newOutput.output);
-                                    sourceList.push(newOutput.nodeId);
-                                    foundSource = true;
-                                } else {
-                                    inputList.push(node.data.input[i]);
-                                    sourceList.push(node.data.source[i]);
-                                }
-                            }
+                        while (inputList.length < 2) inputList.push(undefined);
+                        while (sourceList.length < 2) sourceList.push(undefined);
 
-                            if (!foundSource) {
-                                // adding new value
-                                inputList.push(newOutput.output);
-                                sourceList.push(newOutput.nodeId);
+                        for (let i = 0; i < sourceList.length; i++) {
+                            if (sourceList[i] === newOutput.nodeId) {
+                                inputList[i] = newOutput.output;
+                                break;
                             }
-                            console.log("===================", inputList);
-                            node.data = {
-                                ...node.data,
-                                input: inputList,
-                                source: sourceList,
-                            };
-                        } else {
-                            node.data = {
-                                ...node.data,
-                                input: [newOutput.output],
-                                source: [newOutput.nodeId],
-                            };
                         }
+
+                        node.data = {
+                            ...node.data,
+                            input: inputList,
+                            source: sourceList,
+                        };
                     } else {
                         if (newOutput.output == undefined) {
                             node.data = {
