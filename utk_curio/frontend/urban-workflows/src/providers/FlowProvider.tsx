@@ -573,6 +573,14 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
 
     const onConnect = useCallback(
         (connection: Connection, custom_nodes?: any, custom_edges?: any, custom_workflow?: string, provenance?: boolean) => {
+            console.log(
+                "🔥 onConnect triggered:",
+                connection.source,
+                connection.sourceHandle,
+                connection.target,
+                connection.targetHandle
+            );
+
             const nodes = custom_nodes ? custom_nodes : getNodes();
             const edges = custom_edges ? custom_edges : getEdges();
             const target = nodes.find(
@@ -648,16 +656,26 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                 }
 
                 if (inBox === BoxType.MERGE_FLOW && allowConnection) {
-                    const existingConnections = edges.filter((edge: Edge) =>
-                        edge.target === connection.target &&
-                        (edge.targetHandle === "in_1" || edge.targetHandle === "in_2")
+                    const availableHandles = Array(5).fill(0).map((_, i) => `in_${i}`);
+                    const usedHandles = new Set(
+                        edges
+                            .filter((edge: Edge) =>
+                                edge.target === connection.target &&
+                                availableHandles.includes(edge.targetHandle as string)
+                            )
+                            .map((edge: Edge) => edge.targetHandle)
                     );
 
-                    if (existingConnections.length >= 2) {
-                        alert("Connection Limit Reached!\n\nMerge nodes can only accept 2 input connections:\n• TOP-LEFT input = Primary data\n• BOTTOM-LEFT input = Secondary data\n\nPlease remove an existing connection first.");
+
+                    if (usedHandles.size >= 5) {
+                        alert("Connection Limit Reached!\n\nMerge nodes can only accept up to 5 input connections.");
+                        allowConnection = false;
+                    } else if (usedHandles.has(connection.targetHandle)) {
+                        alert("This input already has a connection.\n\nEach input handle can only accept one connection.");
                         allowConnection = false;
                     }
                 }
+
 
                 // Checking cycles
                 if (target.id === connection.source) {
