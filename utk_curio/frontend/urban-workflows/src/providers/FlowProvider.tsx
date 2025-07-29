@@ -450,12 +450,12 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                         let inputList = Array.isArray(node.data.input) ? [...node.data.input] : [undefined, undefined];
                         let sourceList = Array.isArray(node.data.source) ? [...node.data.source] : [undefined, undefined];
 
-                        // Ensure arrays are exactly size 2
-                        while (inputList.length < 2) inputList.push(undefined);
-                        while (sourceList.length < 2) sourceList.push(undefined);
+                        // Ensure arrays are exactly size 5
+                        while (inputList.length < 6) inputList.push(undefined);
+                        while (sourceList.length < 6) sourceList.push(undefined);
 
-                        // Map handle to array index: "in_1" -> 0 (primary), "in_2" -> 1 (secondary)
-                        const handleIndex = targetHandle === "in_1" ? 0 : targetHandle === "in_2" ? 1 : -1;
+                        const match = targetHandle?.match(/^in_(\d)$/);
+                        const handleIndex = match ? parseInt(match[1], 10) : -1;
 
                         if (handleIndex >= 0) {
                             inputList[handleIndex] = output;
@@ -511,10 +511,13 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                                     let inputList = Array.isArray(node.data.input) ? [...node.data.input] : [undefined, undefined];
                                     let sourceList = Array.isArray(node.data.source) ? [...node.data.source] : [undefined, undefined];
 
-                                    while (inputList.length < 2) inputList.push(undefined);
-                                    while (sourceList.length < 2) sourceList.push(undefined);
+                                    while (inputList.length < 6) inputList.push(undefined);
+                                    while (sourceList.length < 6) sourceList.push(undefined);
 
-                                    const handleIndex = connection.targetHandle === "in_1" ? 0 : connection.targetHandle === "in_2" ? 1 : -1;
+                                    const match = connection.targetHandle?.match(/^in_(\d)$/);
+                                    const handleIndex = match ? parseInt(match[1], 10) : -1;
+
+
 
                                     if (handleIndex >= 0) {
                                         // Clear the specific position
@@ -656,7 +659,7 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                 }
 
                 if (inBox === BoxType.MERGE_FLOW && allowConnection) {
-                    const availableHandles = Array(5).fill(0).map((_, i) => `in_${i}`);
+                    const availableHandles = Array(5).fill(1).map((_, i) => `in_${i}`);
                     const usedHandles = new Set(
                         edges
                             .filter((edge: Edge) =>
@@ -667,8 +670,8 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                     );
 
 
-                    if (usedHandles.size >= 5) {
-                        alert("Connection Limit Reached!\n\nMerge nodes can only accept up to 5 input connections.");
+                    if (usedHandles.size > 7) {
+                        alert("Connection Limit Reached!\n\nMerge nodes can only accept up to 7 input connections.");
                         allowConnection = false;
                     } else if (usedHandles.has(connection.targetHandle)) {
                         alert("This input already has a connection.\n\nEach input handle can only accept one connection.");
@@ -776,8 +779,8 @@ const FlowProvider = ({ children }: { children: ReactNode }) => {
                         let inputList = Array.isArray(node.data.input) ? [...node.data.input] : [undefined, undefined];
                         let sourceList = Array.isArray(node.data.source) ? [...node.data.source] : [undefined, undefined];
 
-                        while (inputList.length < 2) inputList.push(undefined);
-                        while (sourceList.length < 2) sourceList.push(undefined);
+                        while (inputList.length < 6) inputList.push(undefined);
+                        while (sourceList.length < 6) sourceList.push(undefined);
 
                         for (let i = 0; i < sourceList.length; i++) {
                             if (sourceList[i] === newOutput.nodeId) {
